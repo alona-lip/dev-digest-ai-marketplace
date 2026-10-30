@@ -1,0 +1,9 @@
+{
+  "name": "demo",
+  "version": "1.2.0",
+  "description": "Demo plugin for code review and security checks",
+  "author": { "name": "Fixture Team" },
+  "license": "UNLICENSED",
+  "keywords": ["review", "security"],
+  "dependencies": ["remote-tool", "missing-plugin:some-skill"]
+}

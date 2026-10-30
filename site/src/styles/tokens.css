@@ -1,0 +1,54 @@
+/* Design tokens from Catalog.dc.html. Dark is the default theme. */
+:root {
+  --bg: #0b0c0f;
+  --bg-elev: #101217;
+  --bg-elev2: #161920;
+  --bg-hover: #1c2029;
+  --border: #23262f;
+  --border-strong: #33384380;
+  --text: #e8eaef;
+  --text-dim: #98a0ae;
+  --text-faint: #5f6672;
+  --accent: oklch(0.68 0.15 255);
+  --accent-fg: #fff;
+  --kind-plugin: oklch(0.72 0.15 255);
+  --kind-skill: oklch(0.74 0.14 158);
+  --kind-agent: oklch(0.72 0.15 305);
+  --kind-command: oklch(0.76 0.14 55);
+  --kind-hook: oklch(0.78 0.14 115);
+  --kind-mcp: oklch(0.7 0.16 20);
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg: #f6f7f9;
+  --bg-elev: #ffffff;
+  --bg-elev2: #ffffff;
+  --bg-hover: #eef0f4;
+  --border: #e2e5ea;
+  --border-strong: #c9cdd6;
+  --text: #161a20;
+  --text-dim: #5a626e;
+  --text-faint: #8b93a0;
+  --accent: oklch(0.55 0.17 255);
+  --accent-fg: #fff;
+  --kind-plugin: oklch(0.52 0.16 255);
+  --kind-skill: oklch(0.5 0.14 158);
+  --kind-agent: oklch(0.52 0.16 305);
+  --kind-command: oklch(0.55 0.15 55);
+  --kind-hook: oklch(0.52 0.14 132);
+  --kind-mcp: oklch(0.53 0.18 20);
+  color-scheme: light;
+}
+
+@keyframes pop {
+  from { transform: translateY(8px) scale(0.98); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

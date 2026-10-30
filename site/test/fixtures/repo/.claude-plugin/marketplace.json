@@ -1,0 +1,8 @@
+{
+  "name": "test-market",
+  "owner": { "name": "fixture-owner" },
+  "plugins": [
+    { "name": "demo", "source": "./plugins/demo", "description": "Marketplace description", "category": "testing", "tags": ["Review"] },
+    { "name": "remote-tool", "source": { "source": "github", "repo": "acme/remote-tool" }, "description": "Lives in another repository" }
+  ]
+}

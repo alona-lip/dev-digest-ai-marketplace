@@ -2,6 +2,8 @@
 
 [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugins/create-marketplace) for the Dev Digest team. It catalogs plugins (skills, agents, hooks, MCP servers) that team members can install with one command.
 
+**Browse the catalog:** <https://alona-lip.github.io/dev-digest-ai-marketplace/> lets you search every plugin, skill, agent, command, hook and MCP server and copy its install command. The site is built from this repository; see [site/README.md](site/README.md).
+
 ## Install
 
 Add the marketplace once. The repository is public, so no GitHub credentials are needed.
@@ -57,6 +59,7 @@ Current versions are in each plugin's `.claude-plugin/plugin.json` and `CHANGELO
 .claude-plugin/marketplace.json   catalog of plugins
 plugins/<name>/                   plugin sources
 docs/                             guidelines, security and release policy
+site/                             catalog website (GitHub Pages), separate from the plugins
 scripts/                          validation, release and rollback scripts
 ```
 
