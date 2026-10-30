@@ -19,6 +19,13 @@
       "description": "Stack skills for React, Next.js, Fastify, Drizzle, PostgreSQL, Zod, TypeScript, onion architecture, frontend architecture and security",
       "category": "development",
       "tags": ["skills", "react", "fastify", "drizzle", "zod", "typescript", "architecture"]
+    },
+    {
+      "name": "research-tools",
+      "source": "./plugins/research-tools",
+      "description": "Read-only researcher agent that gathers facts from the project or the web and can save one research note",
+      "category": "productivity",
+      "tags": ["agent", "research"]
     }
   ]
 }
