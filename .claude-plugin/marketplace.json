@@ -12,6 +12,13 @@
       "description": "Example plugin that verifies the marketplace setup",
       "category": "examples",
       "tags": ["example"]
+    },
+    {
+      "name": "engineering-paved-path",
+      "source": "./plugins/engineering-paved-path",
+      "description": "Stack skills for React, Next.js, Fastify, Drizzle, PostgreSQL, Zod, TypeScript, onion architecture, frontend architecture and security",
+      "category": "development",
+      "tags": ["skills", "react", "fastify", "drizzle", "zod", "typescript", "architecture"]
     }
   ]
 }

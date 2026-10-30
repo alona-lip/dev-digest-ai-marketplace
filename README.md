@@ -53,6 +53,7 @@ Auto-update is off by default for third-party marketplaces. Set `autoUpdate` as 
 | Plugin | Description |
 | --- | --- |
 | [hello-world](plugins/hello-world) | Example plugin that verifies the marketplace setup |
+| [engineering-paved-path](plugins/engineering-paved-path) | Stack skills for React, Next.js, Fastify, Drizzle, PostgreSQL, Zod, TypeScript, onion architecture, frontend architecture and security |
 
 Current versions are in each plugin's `.claude-plugin/plugin.json` and `CHANGELOG.md`.
 

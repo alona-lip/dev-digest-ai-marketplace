@@ -1,0 +1,116 @@
+{
+  "skill_name": "frontend-architecture",
+  "evals": [
+    {
+      "id": 1,
+      "name": "new-feature-placement",
+      "prompt": "Проєкт — трекер задач. Конвенції проєкту (з його AGENTS.md): Next.js 15 App Router + TanStack Query, окремий REST-бекенд; route-local компоненти в src/app/**/_components/<Name>/ з <Name>.tsx, <Name>.test.tsx, constants.ts / helpers.ts / styles.ts / index.ts; styles.ts експортує обʼєкт `s`; дані тільки через хуки в src/lib/hooks/<domain>.ts (core, projects, tasks) поверх src/lib/api.ts; типи контракту API — з @/lib/contracts. Хочу додати на сторінку проєкту (src/app/projects/[projectId]) нову панель «Time breakdown» — таблицю витраченого часу по кожному виконавцю за всі задачі проєкту, з кольоровим підсвічуванням: зелене до 8 год, жовте до 24 год, червоне вище. Дані вже приходять з API у списку задач (spent_hours, assignee_name) через хук useProjectTasks у src/lib/hooks/tasks.ts. Напиши, які файли створити і де, що в кожному лежатиме (компонент, пороги, функція агрегації, хук даних, тести), з короткими фрагментами коду. Тільки план, без змін у коді.",
+      "expected_output": "A file-by-file plan: a route-local _components/TimeBreakdown folder with role files, thresholds in constants.ts, aggregation as a pure helper, data from the existing useProjectTasks hook in lib/hooks/tasks.ts, colocated test.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "a1",
+          "text": "Places the new component in the route-local folder app/projects/[projectId]/_components/<Name>/ (not src/components, not a new features/ tree)"
+        },
+        {
+          "id": "a2",
+          "text": "Puts the color thresholds as named constants in the component's own constants.ts"
+        },
+        {
+          "id": "a3",
+          "text": "Implements per-assignee aggregation as a pure function in the component's helpers.ts with no React import"
+        },
+        {
+          "id": "a4",
+          "text": "Gets data from the existing data hook in src/lib/hooks (useProjectTasks in tasks.ts) — no fetch/api call inside the component and no new one-file-per-hook module"
+        },
+        {
+          "id": "a5",
+          "text": "Does not create a new global utils/ file or shared component for code with a single consumer"
+        },
+        {
+          "id": "a6",
+          "text": "Includes index.ts re-export and a colocated <Name>.test.tsx (and/or helper tests)"
+        },
+        {
+          "id": "a7",
+          "text": "Cross-folder imports use the @/ alias (e.g. @/lib/hooks, @/lib/contracts), not long ../../../ relative chains"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "refactor-large-component",
+      "prompt": "Проєкт — трекер задач. Конвенції проєкту (з його AGENTS.md): Next.js 15 App Router + TanStack Query, окремий REST-бекенд; route-local компоненти в src/app/**/_components/<Name>/ з <Name>.tsx, <Name>.test.tsx, constants.ts / helpers.ts / styles.ts / index.ts; styles.ts експортує обʼєкт `s`; дані тільки через хуки в src/lib/hooks/<domain>.ts (core, projects, tasks) поверх src/lib/api.ts; типи контракту API — з @/lib/contracts. Компонент src/app/projects/[projectId]/_components/TaskHistory/TaskHistory.tsx розрісся до ~290 рядків. У ньому: чисті функції statusOf(task) і durationOf(task), побудова таймлайну з масиву подій, мапа STATUS_COLORS, десяток повторюваних inline-обʼєктів style, внутрішній компонент TaskTile (~80 рядків), сам TaskHistory і поруч TaskHistory.test.tsx. Запропонуй, як його розбити: які файли й підкомпоненти створити, куди перенести функції, типи, стилі. Опиши цільове дерево файлів і що куди переїжджає. Тільки план, без змін у коді.",
+      "expected_output": "A target file tree for TaskHistory/ with helpers.ts (statusOf, durationOf, timeline building), constants.ts (STATUS_COLORS), styles.ts (s object), a nested _components/TaskTile/, index.ts, and tests kept colocated.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "b1",
+          "text": "Moves the pure functions (statusOf, durationOf and/or timeline building) into TaskHistory/helpers.ts"
+        },
+        {
+          "id": "b2",
+          "text": "Moves the style constants and repeated inline styles into TaskHistory/styles.ts (the project's `s` object pattern)"
+        },
+        {
+          "id": "b3",
+          "text": "Extracts TaskTile into a nested private folder TaskHistory/_components/TaskTile/"
+        },
+        {
+          "id": "b4",
+          "text": "Adds an index.ts that re-exports TaskHistory"
+        },
+        {
+          "id": "b5",
+          "text": "Keeps single-consumer code inside TaskHistory/ — nothing moved to src/components or a global lib/utils"
+        },
+        {
+          "id": "b6",
+          "text": "Keeps or extends colocated tests (TaskHistory.test.tsx, helper tests)"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "greenfield-nextjs-structure",
+      "prompt": "Починаю новий проєкт: Next.js 15 App Router + TypeScript, дашборд для виставлення рахунків (invoices, clients, payments), Postgres через Drizzle прямо з Next (окремого бекенду немає). Запропонуй структуру папок і правила: де компоненти, де константи (статуси інвойсу тощо), що в utils vs helpers, де бізнес-логіка (розрахунок податків, прострочення), як влаштувати доступ до БД і Server Actions.",
+      "expected_output": "A folder structure with thin app/ routes and colocated route code, a server-only data access layer, thin server actions, as-const statuses, pure domain functions, dependency direction rules and leaf-level use client.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "c1",
+          "text": "app/ holds routing with thin pages, and route-specific code is colocated (_components or features/)"
+        },
+        {
+          "id": "c2",
+          "text": "Database access lives in a data access layer marked `import 'server-only'`, never in components"
+        },
+        {
+          "id": "c3",
+          "text": "Server Actions are thin and delegate to the DAL, with auth/validation in the action or DAL"
+        },
+        {
+          "id": "c4",
+          "text": "Invoice statuses are an `as const` object plus a derived union type, explicitly preferred over a TS enum"
+        },
+        {
+          "id": "c5",
+          "text": "Business rules (tax calculation, overdue) are pure, framework-free functions separate from components"
+        },
+        {
+          "id": "c6",
+          "text": "States a one-way dependency rule (shared → features → app) or forbids cross-feature imports"
+        },
+        {
+          "id": "c7",
+          "text": "Says to put 'use client' on interactive leaf components rather than whole pages/layouts"
+        },
+        {
+          "id": "c8",
+          "text": "Distinguishes domain-specific helpers from domain-agnostic utils and warns against a catch-all utils file / premature promotion"
+        }
+      ]
+    }
+  ]
+}

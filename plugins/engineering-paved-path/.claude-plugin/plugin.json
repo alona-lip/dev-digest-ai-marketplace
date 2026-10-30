@@ -1,0 +1,10 @@
+{
+  "name": "engineering-paved-path",
+  "version": "1.0.0",
+  "description": "Stack skills for React, Next.js, Fastify, Drizzle, PostgreSQL, Zod, TypeScript, onion architecture, frontend architecture and security",
+  "author": {
+    "name": "alona-lip"
+  },
+  "license": "UNLICENSED",
+  "keywords": ["skills", "react", "nextjs", "fastify", "drizzle", "postgresql", "zod", "typescript", "architecture", "security"]
+}
