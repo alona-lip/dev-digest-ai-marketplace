@@ -1,0 +1,10 @@
+# Default owner for everything in the marketplace.
+* @alona-lip
+
+# Catalog changes always go through the marketplace owner.
+/.claude-plugin/ @alona-lip
+/docs/ @alona-lip
+/.github/ @alona-lip
+
+# Per-plugin owners. Add a line for each new plugin.
+/plugins/hello-world/ @alona-lip

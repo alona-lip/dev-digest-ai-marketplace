@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "dev-digest-ai-marketplace",
+  "description": "Internal Claude Code plugins for the Dev Digest team",
+  "owner": {
+    "name": "alona-lip"
+  },
+  "plugins": [
+    {
+      "name": "hello-world",
+      "source": "./plugins/hello-world",
+      "description": "Example plugin that verifies the marketplace setup",
+      "category": "examples",
+      "tags": ["example"]
+    }
+  ]
+}
