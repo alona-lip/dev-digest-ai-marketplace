@@ -1,5 +1,8 @@
 # dev-digest-ai-marketplace
 
+[![Validate marketplace](https://github.com/alona-lip/dev-digest-ai-marketplace/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/alona-lip/dev-digest-ai-marketplace/actions/workflows/validate.yml)
+[![Catalog site](https://github.com/alona-lip/dev-digest-ai-marketplace/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/alona-lip/dev-digest-ai-marketplace/actions/workflows/pages.yml)
+
 [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugins/create-marketplace) for the Dev Digest team. It catalogs plugins (skills, agents, hooks, MCP servers) that team members can install with one command.
 
 **Browse the catalog:** <https://alona-lip.github.io/dev-digest-ai-marketplace/> lets you search every plugin, skill, agent, command, hook and MCP server and copy its install command. The site is built from this repository; see [site/README.md](site/README.md).
@@ -69,6 +72,7 @@ scripts/                          validation, release and rollback scripts
 - [docs/PLUGIN-GUIDELINES.md](docs/PLUGIN-GUIDELINES.md): plugin structure, manifest and dependency requirements
 - [docs/SECURITY.md](docs/SECURITY.md): permissions, secrets policy and script review
 - [docs/RELEASES.md](docs/RELEASES.md): SemVer, tags, updates and rollback
+- [docs/specs/sdd-plugins.md](docs/specs/sdd-plugins.md): spec for the SDD plugins (`sdd-engineering` and its dependencies)
 
 ## License
 

@@ -1,6 +1,7 @@
 import { useApp } from '../context';
 import { KindDot } from '../components/Kind';
-import { KIND_PLURAL, countByKind, releases } from '../lib/catalog';
+import { t } from '../i18n';
+import { countByKind, releases } from '../lib/catalog';
 import { searchRoute } from '../lib/router';
 import { KINDS, type Kind } from '../lib/types';
 
@@ -24,14 +25,12 @@ export function Home({ query, onQuery, onSubmit }: Props) {
   return (
     <main className="page home">
       <section className="hero">
-        <div className="eyebrow">Marketplace of plugins · skills · agents</div>
+        <div className="eyebrow">{t.home.eyebrow}</div>
         <h1>
-          Find the right artifact
-          <br /> and install it with one copy-paste
+          {t.home.titleLine1}
+          <br /> {t.home.titleLine2}
         </h1>
-        <p className="hero-sub">
-          Search plugins, skills, agents, commands, hooks and MCP servers by what you need them to do.
-        </p>
+        <p className="hero-sub">{t.home.sub}</p>
         <div className="hero-search" role="search">
           <span className="search-icon" aria-hidden="true">⌕</span>
           <input
@@ -39,8 +38,8 @@ export function Home({ query, onQuery, onSubmit }: Props) {
             value={query}
             onChange={(e) => onQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
-            placeholder='Describe what you need, e.g. "skill for refactoring React"'
-            aria-label="Describe what you need"
+            placeholder={t.home.searchPlaceholder}
+            aria-label={t.home.searchLabel}
           />
         </div>
         {topKeywords.length > 0 && (
@@ -57,24 +56,24 @@ export function Home({ query, onQuery, onSubmit }: Props) {
       {empty ? (
         <section className="catalog-empty">
           <div className="emoji" aria-hidden="true">📦</div>
-          <h2>The catalog is empty</h2>
-          <p>There are no plugins yet. Add the first one and it shows up here after the next CI build.</p>
+          <h2>{t.home.emptyTitle}</h2>
+          <p>{t.home.emptyText}</p>
           <div className="btn-row">
             <button type="button" className="btn-primary" onClick={() => go({ screen: 'getting-started' })}>
-              Getting started
+              {t.home.gettingStarted}
             </button>
             <a className="btn-secondary" href={`${catalog.repoUrl}/blob/main/CONTRIBUTING.md`} target="_blank" rel="noopener noreferrer">
-              CONTRIBUTING.md
+              {t.home.contributing}
             </a>
           </div>
         </section>
       ) : (
         <>
-          <section className="stats" aria-label="Catalog statistics">
+          <section className="stats" aria-label={t.home.statsLabel}>
             {STAT_KINDS.map((k) => (
               <button type="button" key={k} className="stat" onClick={() => go(searchRoute({ kinds: [k] }))}>
                 <div className="stat-count">{countByKind(catalog, k)}</div>
-                <div className="stat-label">{KIND_PLURAL[k]}</div>
+                <div className="stat-label">{t.kinds.plural[k]}</div>
               </button>
             ))}
           </section>
@@ -82,9 +81,9 @@ export function Home({ query, onQuery, onSubmit }: Props) {
           {latest.length > 0 && (
             <section className="home-section">
               <div className="section-head">
-                <h2>What's new</h2>
+                <h2>{t.home.whatsNew}</h2>
                 <button type="button" className="link-dim" onClick={() => go({ screen: 'whats-new' })}>
-                  Full feed →
+                  {t.home.fullFeed}
                 </button>
               </div>
               <div className="release-list">
@@ -109,13 +108,13 @@ export function Home({ query, onQuery, onSubmit }: Props) {
 
           <section>
             <div className="section-head">
-              <h2>Browse by type</h2>
+              <h2>{t.home.browseByType}</h2>
             </div>
             <div className="browse">
               {KINDS.map((k) => (
                 <button type="button" key={k} className="browse-btn hoverable" onClick={() => go(searchRoute({ kinds: [k] }))}>
                   <KindDot kind={k} large />
-                  <span className="browse-label">{KIND_PLURAL[k]}</span>
+                  <span className="browse-label">{t.kinds.plural[k]}</span>
                   <span className="count">{countByKind(catalog, k)}</span>
                 </button>
               ))}

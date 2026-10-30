@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { useApp } from '../context';
 import { ArtifactCard } from '../components/ArtifactCard';
 import { KindDot } from '../components/Kind';
-import { KIND_PLURAL, countByKind } from '../lib/catalog';
+import { t } from '../i18n';
+import { countByKind } from '../lib/catalog';
 import { navigate, type SearchRoute } from '../lib/router';
 import { applyFacets, type CatalogSearch, type Sort } from '../lib/search';
 import { KINDS } from '../lib/types';
@@ -28,15 +29,15 @@ export function Search({ route, search }: { route: SearchRoute; search: CatalogS
 
   return (
     <main className="page search-page">
-      <aside className="facets" aria-label="Filters">
+      <aside className="facets" aria-label={t.search.filtersLabel}>
         <div className="facets-head">
-          <span className="facets-title">Filters</span>
+          <span className="facets-title">{t.search.filters}</span>
           <button type="button" className="facets-reset" onClick={reset}>
-            Reset
+            {t.search.reset}
           </button>
         </div>
 
-        <div className="facet-label">Type</div>
+        <div className="facet-label">{t.search.type}</div>
         <div className="facet-list">
           {KINDS.map((k) => (
             <button
@@ -47,7 +48,7 @@ export function Search({ route, search }: { route: SearchRoute; search: CatalogS
               onClick={() => update({ kinds: toggle(route.kinds, k) })}
             >
               <KindDot kind={k} />
-              <span className="facet-text cap">{KIND_PLURAL[k]}</span>
+              <span className="facet-text cap">{t.kinds.plural[k]}</span>
               <span className="count">{countByKind(catalog, k)}</span>
             </button>
           ))}
@@ -55,7 +56,7 @@ export function Search({ route, search }: { route: SearchRoute; search: CatalogS
 
         {keywords.length > 0 && (
           <>
-            <div className="facet-label">Keywords</div>
+            <div className="facet-label">{t.search.keywords}</div>
             <div className="kw-list">
               {keywords.map((k) => (
                 <button
@@ -74,7 +75,7 @@ export function Search({ route, search }: { route: SearchRoute; search: CatalogS
 
         {authors.length > 0 && (
           <>
-            <div className="facet-label">Author</div>
+            <div className="facet-label">{t.search.author}</div>
             <div className="facet-list">
               {authors.map(([a, n]) => (
                 <button
@@ -96,17 +97,17 @@ export function Search({ route, search }: { route: SearchRoute; search: CatalogS
       <section>
         <div className="results-head">
           <div>
-            <h1>{route.q ? `Results: “${route.q}”` : 'Browse the catalog'}</h1>
+            <h1>{route.q ? t.search.resultsFor(route.q) : t.search.browse}</h1>
             <div className="results-count" aria-live="polite">
-              {results.length} {results.length === 1 ? 'artifact' : 'artifacts'}
+              {t.search.count(results.length)}
             </div>
           </div>
           <label className="sort">
-            Sort
+            {t.search.sort}
             <select value={route.sort} onChange={(e) => update({ sort: e.target.value as Sort })}>
-              <option value="relevance">Relevance</option>
-              <option value="name">Name</option>
-              <option value="updated">Recently updated</option>
+              <option value="relevance">{t.search.sortRelevance}</option>
+              <option value="name">{t.search.sortName}</option>
+              <option value="updated">{t.search.sortUpdated}</option>
             </select>
           </label>
         </div>
@@ -120,10 +121,10 @@ export function Search({ route, search }: { route: SearchRoute; search: CatalogS
         ) : (
           <div className="empty-box">
             <div className="empty-emoji" aria-hidden="true">🔍</div>
-            <h3>Nothing found</h3>
-            <p>Try resetting filters or changing your query.</p>
+            <h3>{t.common.nothingFound}</h3>
+            <p>{t.search.emptyText}</p>
             <button type="button" className="btn-secondary" style={{ height: 34, padding: '0 16px' }} onClick={reset}>
-              Reset filters
+              {t.search.resetFilters}
             </button>
           </div>
         )}

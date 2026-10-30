@@ -1,4 +1,5 @@
 import { forwardRef } from 'react';
+import { t } from '../i18n';
 import type { Theme } from '../lib/theme';
 
 interface Props {
@@ -18,10 +19,10 @@ export const Header = forwardRef<HTMLInputElement, Props>(function Header(
 ) {
   return (
     <header className="header">
-      <button type="button" className="brand" onClick={onHome} aria-label="Catalog home">
+      <button type="button" className="brand" onClick={onHome} aria-label={t.header.homeLabel}>
         <span className="brand-mark" aria-hidden="true">◆</span>
-        <span className="brand-name">Catalog</span>
-        <span className="brand-pill">dev-digest</span>
+        <span className="brand-name">{t.header.brand}</span>
+        <span className="brand-pill">{t.header.brandPill}</span>
       </button>
       <div className="header-search" role="search">
         <span className="search-icon" aria-hidden="true">⌕</span>
@@ -31,23 +32,23 @@ export const Header = forwardRef<HTMLInputElement, Props>(function Header(
           value={query}
           onChange={(e) => onQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
-          placeholder="Search the catalog…"
-          aria-label="Search the catalog"
+          placeholder={t.header.searchPlaceholder}
+          aria-label={t.header.searchLabel}
         />
       </div>
-      <button type="button" className="icon-btn mono" onClick={onOpenPalette} aria-label="Open command palette" title="Command palette (⌘K / Ctrl+K)">
-        ⌘K
+      <button type="button" className="icon-btn mono" onClick={onOpenPalette} aria-label={t.header.paletteLabel} title={t.header.paletteTitle}>
+        {t.header.paletteKey}
       </button>
       <button
         type="button"
         className="icon-btn square"
         onClick={onToggleTheme}
-        aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+        aria-label={theme === 'dark' ? t.header.toLightTheme : t.header.toDarkTheme}
       >
         {theme === 'dark' ? '☾' : '☀'}
       </button>
       <a className="header-link" href={repoUrl} target="_blank" rel="noopener noreferrer">
-        GitHub ↗
+        {t.header.github}
       </a>
     </header>
   );

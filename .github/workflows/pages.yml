@@ -1,5 +1,8 @@
 name: Catalog site
 
+# Builds and deploys the catalog site only. Marketplace and plugin checks live in validate.yml.
+# Each job is its own check in the GitHub UI: "Site · tests", "Site · build", "Site · deploy".
+
 on:
   push:
     branches: [main]
@@ -20,7 +23,26 @@ permissions:
   contents: read
 
 jobs:
+  test:
+    name: Site · tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - run: npm ci
+      - run: npm test
+
   build:
+    name: Site · build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -38,8 +60,17 @@ jobs:
           cache-dependency-path: site/package-lock.json
 
       - run: npm ci
-      - run: npm test
-      - run: npm run build
+
+      - name: Build catalog and site
+        run: npm run build
+
+      - name: Write build summary
+        run: |
+          {
+            echo "### Catalog site build"
+            echo
+            jq -r '"- Plugins: \(.plugins | length)\n- Catalog entries: \(.entries | length)\n- Generated at: \(.generatedAt)"' dist/catalog.json
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request'
@@ -47,8 +78,9 @@ jobs:
           path: site/dist
 
   deploy:
+    name: Site · deploy
     if: github.event_name != 'pull_request'
-    needs: build
+    needs: [test, build]
     runs-on: ubuntu-latest
     permissions:
       pages: write

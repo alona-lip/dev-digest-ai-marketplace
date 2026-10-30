@@ -1,6 +1,7 @@
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { buildCatalog, buildFeed, parseChangelog, toPlainText } from '../scripts/build-catalog';
+import { buildCatalog, buildFeed, parseChangelog, parseDependency, toPlainText } from '../scripts/build-catalog';
+import { agentsPreloading, skillRefId } from '../src/lib/catalog';
 
 const fixture = (name: string) => resolve(__dirname, 'fixtures', name);
 const build = (name = 'repo') =>
@@ -25,7 +26,11 @@ describe('buildCatalog', () => {
       author: 'Fixture Team',
       category: 'testing',
       keywords: ['review', 'security'],
-      deps: ['remote-tool', 'missing-plugin:some-skill'],
+      deps: [
+        { name: 'remote-tool', version: '^1.0.0' },
+        { name: 'missing-plugin:some-skill' },
+        { name: 'audit-logger', marketplace: 'shared-market' },
+      ],
       updated: '2026-09-01',
       installText: '/plugin install demo@test-market',
       githubUrl: 'https://github.com/Acme/market/tree/main/plugins/demo',
@@ -60,7 +65,13 @@ describe('buildCatalog', () => {
       keywords: ['review', 'security'],
       installText: '/plugin install demo@test-market',
     });
-    expect(byId('agent:demo/security-auditor')).toMatchObject({ invocation: 'demo:security-auditor', tools: ['Read', 'Grep', 'Glob'], model: 'sonnet' });
+    expect(byId('agent:demo/security-auditor')).toMatchObject({
+      invocation: 'demo:security-auditor',
+      tools: ['Read', 'Grep', 'Glob'],
+      model: 'sonnet',
+      skills: ['code-review', 'other-plugin:helper'],
+    });
+    expect(byId('skill:demo/code-review').skills).toBeUndefined();
     expect(byId('command:demo/changelog')).toMatchObject({ name: 'changelog', invocation: '/demo:changelog' });
   });
 
@@ -87,6 +98,12 @@ describe('buildCatalog', () => {
     expect(catalog.plugins['remote-tool']).toMatchObject({ description: 'Lives in another repository', author: 'fixture-owner', changelog: [] });
   });
 
+  it('links preloaded skills to the agents that use them', () => {
+    expect(skillRefId('code-review', 'demo')).toBe('skill:demo/code-review');
+    expect(skillRefId('other-plugin:helper', 'demo')).toBe('skill:other-plugin/helper');
+    expect(agentsPreloading(catalog, 'skill:demo/code-review').map((e) => e.id)).toEqual(['agent:demo/security-auditor']);
+  });
+
   it('handles an empty marketplace', () => {
     const empty = build('empty');
     expect(empty.entries).toEqual([]);
@@ -103,6 +120,14 @@ describe('helpers', () => {
 
   it('strips markdown to plain text', () => {
     expect(toPlainText('## Title\n\n- **bold** [link](x) `code`\n\n| a | b |\n| --- | --- |')).toBe('Title bold link code a b');
+  });
+
+  it('parses every documented dependency form', () => {
+    expect(parseDependency('tool')).toEqual({ name: 'tool' });
+    expect(parseDependency('tool@other-market')).toEqual({ name: 'tool', marketplace: 'other-market' });
+    expect(parseDependency({ name: 'tool', version: '~2.1.0', marketplace: 'm' })).toEqual({ name: 'tool', version: '~2.1.0', marketplace: 'm' });
+    expect(parseDependency({ version: '^1.0.0' })).toBeNull();
+    expect(parseDependency('')).toBeNull();
   });
 
   it('accepts changelog headings without brackets or dates', () => {

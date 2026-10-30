@@ -1,4 +1,5 @@
 import { useApp } from '../context';
+import { t } from '../i18n';
 import { releases } from '../lib/catalog';
 
 export function WhatsNew() {
@@ -7,16 +8,16 @@ export function WhatsNew() {
   return (
     <main className="page whats-new-page">
       <button type="button" className="back-link" onClick={() => go({ screen: 'home' })}>
-        ← Home
+        {t.common.home}
       </button>
       <div className="page-head">
-        <h1>What's new</h1>
+        <h1>{t.whatsNew.title}</h1>
         <a className="rss-link" href="./feed.xml" target="_blank" rel="noopener">
-          Subscribe · RSS
+          {t.whatsNew.rss}
         </a>
       </div>
       {items.length === 0 ? (
-        <p className="muted">No releases yet.</p>
+        <p className="muted">{t.whatsNew.empty}</p>
       ) : (
         <div className="feed">
           {items.map((r) => (

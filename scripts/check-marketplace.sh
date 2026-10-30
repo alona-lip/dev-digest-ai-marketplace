@@ -68,6 +68,16 @@ if [[ -n "$duplicates" ]]; then
   fail "duplicate plugin names: $duplicates"
 fi
 
+# A plugin folder without a catalog entry is invisible to Claude Code and the catalog site.
+sources=$(jq -r '.plugins[].source | select(type == "string") | sub("^\\./"; "") | sub("/$"; "")' "$catalog")
+for dir in plugins/*/; do
+  [[ -d "$dir" ]] || continue
+  dir="${dir%/}"
+  if ! grep -qxF "$dir" <<<"$sources"; then
+    fail "$dir: folder has no entry in $catalog"
+  fi
+done
+
 if (( errors > 0 )); then
   echo "✘ $errors problem(s) found" >&2
   exit 1

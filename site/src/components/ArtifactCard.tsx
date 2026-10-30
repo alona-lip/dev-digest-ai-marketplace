@@ -1,4 +1,5 @@
 import { useApp } from '../context';
+import { t } from '../i18n';
 import type { Entry } from '../lib/types';
 import { KindBadge } from './Kind';
 
@@ -39,10 +40,10 @@ export function ArtifactCard({ entry }: { entry: Entry }) {
             onClick={() => copy(entry.installText, copyId)}
             title={entry.installText}
           >
-            {copied ? 'Copied ✓' : 'Copy install'}
+            {copied ? t.common.copied : t.common.copyInstall}
           </button>
-          <button type="button" className="btn-sm primary" onClick={open} aria-label={`Open ${entry.displayName}`}>
-            Open
+          <button type="button" className="btn-sm primary" onClick={open} aria-label={t.card.openLabel(entry.displayName)}>
+            {t.card.open}
           </button>
         </div>
       </div>

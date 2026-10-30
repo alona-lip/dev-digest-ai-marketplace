@@ -5,5 +5,5 @@
   "author": { "name": "Fixture Team" },
   "license": "UNLICENSED",
   "keywords": ["review", "security"],
-  "dependencies": ["remote-tool", "missing-plugin:some-skill"]
+  "dependencies": [{ "name": "remote-tool", "version": "^1.0.0" }, "missing-plugin:some-skill", "audit-logger@shared-market"]
 }

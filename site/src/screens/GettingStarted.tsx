@@ -1,47 +1,37 @@
 import { useApp } from '../context';
+import { t } from '../i18n';
 
 export function GettingStarted() {
   const { catalog, go, copy, copiedId } = useApp();
-  const example = Object.keys(catalog.plugins)[0] ?? '<plugin>';
+  const s = t.gettingStarted;
+  const example = Object.keys(catalog.plugins)[0] ?? s.examplePlugin;
   const steps = [
-    {
-      title: 'Add the marketplace as a source',
-      desc: 'Registers this catalog repository in your Claude Code.',
-      cmd: `/plugin marketplace add ${catalog.repo}`,
-    },
-    {
-      title: 'Install a plugin',
-      desc: 'Install a specific plugin from this marketplace by name.',
-      cmd: `/plugin install ${example}@${catalog.marketplace}`,
-    },
-    {
-      title: 'Keep it up to date',
-      desc: 'Refresh the marketplace now and then, then run /reload-plugins or start a new session.',
-      cmd: `/plugin marketplace update ${catalog.marketplace}`,
-    },
+    { title: s.addTitle, desc: s.addDesc, cmd: `/plugin marketplace add ${catalog.repo}` },
+    { title: s.installTitle, desc: s.installDesc, cmd: `/plugin install ${example}@${catalog.marketplace}` },
+    { title: s.updateTitle, desc: s.updateDesc, cmd: `/plugin marketplace update ${catalog.marketplace}` },
   ];
   return (
     <main className="page gs-page">
       <button type="button" className="back-link" onClick={() => go({ screen: 'home' })}>
-        ← Home
+        {t.common.home}
       </button>
-      <h1>Connect the marketplace</h1>
-      <p className="gs-lead">Three steps. Add the marketplace as a source, then install individual plugins.</p>
+      <h1>{s.title}</h1>
+      <p className="gs-lead">{s.lead}</p>
       <ol className="steps">
-        {steps.map((s, i) => {
+        {steps.map((step, i) => {
           const id = 's:' + i;
           const copied = copiedId === id;
           return (
-            <li key={s.title} className="step">
+            <li key={step.title} className="step">
               <div className="step-n" aria-hidden="true">{i + 1}</div>
               <div className="step-body">
-                <h3>{s.title}</h3>
-                <p>{s.desc}</p>
+                <h3>{step.title}</h3>
+                <p>{step.desc}</p>
                 <div className="terminal">
                   <span className="prompt">$</span>
-                  <span className="cmd" title={s.cmd}>{s.cmd}</span>
-                  <button type="button" className={`step-copy${copied ? ' copied' : ''}`} onClick={() => copy(s.cmd, id)} aria-label={`Copy: ${s.cmd}`}>
-                    {copied ? '✓' : 'Copy'}
+                  <span className="cmd" title={step.cmd}>{step.cmd}</span>
+                  <button type="button" className={`step-copy${copied ? ' copied' : ''}`} onClick={() => copy(step.cmd, id)} aria-label={s.copyLabel(step.cmd)}>
+                    {copied ? s.copied : s.copy}
                   </button>
                 </div>
               </div>
@@ -50,8 +40,7 @@ export function GettingStarted() {
         })}
       </ol>
       <div className="gs-note">
-        <strong>marketplace update vs plugin update.</strong> The first refreshes the list of sources; the second updates
-        the code of an installed plugin.
+        <strong>{s.noteTitle}</strong> {s.noteText}
       </div>
     </main>
   );
