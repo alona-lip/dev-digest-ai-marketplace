@@ -33,6 +33,13 @@
       "description": "Read-only architecture reviewer that checks a diff against the project's documented architecture contracts",
       "category": "code-review",
       "tags": ["agent", "review", "architecture"]
+    },
+    {
+      "name": "sdd-engineering",
+      "source": "./plugins/sdd-engineering",
+      "description": "Spec-Driven Development pipeline: spec, plan, parallel implementation, review, tests and final verification",
+      "category": "workflow",
+      "tags": ["sdd", "agents", "workflow", "spec", "plan"]
     }
   ]
 }
