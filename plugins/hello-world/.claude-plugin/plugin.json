@@ -1,0 +1,10 @@
+{
+  "name": "hello-world",
+  "version": "0.1.0",
+  "description": "Example plugin that verifies the marketplace setup",
+  "author": {
+    "name": "alona-lip"
+  },
+  "license": "UNLICENSED",
+  "keywords": ["example"]
+}
