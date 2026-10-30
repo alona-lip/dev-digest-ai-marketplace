@@ -21,6 +21,7 @@ Its only possible write is one research note, `<research_dir>/<feature>.research
 | --- | --- | --- |
 | Agent `researcher` | `@agent-research-tools:researcher <question>`, or the Agent tool with `subagent_type: research-tools:researcher` | Answers a question about the project or the web in a fixed template. Asks clarifying questions first when the request is too vague to research |
 | Hook `restrict-writes.sh` | Runs on every `Write`, `Edit`, `MultiEdit` and `NotebookEdit` call | Lets `research-tools:researcher` write only `<research_dir>/*.research.md`. Other agents and the main session are not affected |
+| Hook `announce-version.sh` | Runs once when a new session starts (`SessionStart`, `startup`) | Shows `research-tools v<version> loaded` to the user, so you can confirm which version a marketplace update installed. Adds nothing to Claude's context. Prints nothing if `jq` is missing |
 
 ## Configuration
 
@@ -82,7 +83,7 @@ The agent writes `docs/plans/order-export.research.md` (first line `# Research: 
 ## Dependencies
 
 - No plugin dependencies.
-- `jq` on the `PATH`. Without it the hook blocks every write by `researcher`; other writes are not affected.
+- `jq` on the `PATH`. Without it the `restrict-writes.sh` hook blocks every write by `researcher` (other writes are not affected), and `announce-version.sh` shows nothing.
 - `WebSearch` and `WebFetch` need network access for internet questions.
 
 ## Based on

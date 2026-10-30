@@ -4,6 +4,12 @@ All notable changes to this plugin are documented here. The format follows [Keep
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-30
+
+### Added
+
+- `SessionStart` hook `announce-version.sh` that shows `research-tools v<version> loaded` to the user when a new session starts, to confirm which version an update installed.
+
 ## [1.0.0] - 2026-10-30
 
 ### Added
