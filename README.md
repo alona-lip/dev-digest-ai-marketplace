@@ -55,6 +55,7 @@ Auto-update is off by default for third-party marketplaces. Set `autoUpdate` as 
 | [hello-world](plugins/hello-world) | Example plugin that verifies the marketplace setup |
 | [engineering-paved-path](plugins/engineering-paved-path) | Stack skills for React, Next.js, Fastify, Drizzle, PostgreSQL, Zod, TypeScript, onion architecture, frontend architecture and security |
 | [research-tools](plugins/research-tools) | Read-only researcher agent that gathers facts from the project or the web and can save one research note |
+| [architecture-review](plugins/architecture-review) | Read-only architecture reviewer that checks a diff against the project's documented architecture contracts. Installs `engineering-paved-path` |
 
 Current versions are in each plugin's `.claude-plugin/plugin.json` and `CHANGELOG.md`.
 
