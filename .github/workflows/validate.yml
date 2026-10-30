@@ -29,6 +29,9 @@ jobs:
       - name: Check catalog consistency
         run: ./scripts/check-marketplace.sh
 
+      - name: Check plugin portability
+        run: ./scripts/check-portability.sh
+
       - name: Check version bumps
         if: github.event_name == 'pull_request'
         run: ./scripts/check-version-bump.sh "origin/${{ github.base_ref }}"

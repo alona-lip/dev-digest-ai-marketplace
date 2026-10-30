@@ -14,11 +14,12 @@ The Spec-Driven Development (SDD) agents and skills live only inside the dev-dig
 | --- | --- | --- | --- |
 | `engineering-paved-path` | 1.0.0 | 11 stack skills: `react-best-practices`, `next-best-practices`, `react-testing-library`, `frontend-architecture`, `fastify-best-practices`, `drizzle-orm-patterns`, `postgresql-table-design`, `onion-architecture`, `zod`, `typescript-expert`, `security` | — |
 | `research-tools` | 1.0.0 | Agent `researcher`: read-only, except for one optional research note. Write-guard hook. | — |
-| `architecture-review` | 1.0.0 | Agent `architecture-reviewer`: generalized and read-only. Preloads 8 skills from `engineering-paved-path`. | `engineering-paved-path ^1.0.0` |
+| `architecture-review` | 1.0.0 | Agent `architecture-reviewer`: generalized and read-only. Preloads 8 skills from `engineering-paved-path`. Evals. | `engineering-paved-path ^1.0.0` |
 | `sdd-engineering` | 1.0.0 | Agents `spec-creator`, `implementation-planner`, `implementer`, `test-writer`, `plan-verifier`. Skills `run-plan`, `workflow-retro`, `mermaid-diagram`, `engineering-insights`. Write-guard hook, evals, README, CHANGELOG. | all three above, `^1.0.0` |
 
 - `test-writer` is the fifth agent in `sdd-engineering` because step 3 of `run-plan` dispatches it.
 - `mermaid-diagram` and `engineering-insights` stay in `sdd-engineering`: they serve the process, not a tech stack.
+- Evals are ported from [`ai-agentic-engineering-neo/dev-digest@lesson-7-lab/multiagents-finish`](https://github.com/ai-agentic-engineering-neo/dev-digest/tree/lesson-7-lab/multiagents-finish) (`evals/`, vitest + Agent SDK) to the `claude plugin eval` format. The `architecture-reviewer` cases go to `architecture-review`, rewritten against a neutral sample project. The `engineering-insights` activation pair and a reviewer dispatch trace go to `sdd-engineering`. The `CLAUDE.md` routing cases are product-specific and are not ported.
 
 ## 2. Dependency graph
 
@@ -130,6 +131,7 @@ plugins/
 ├── architecture-review/
 │   ├── .claude-plugin/plugin.json       (dependencies)
 │   ├── agents/architecture-reviewer.md
+│   ├── evals/<case>/{prompt.md,graders/}
 │   ├── README.md
 │   └── CHANGELOG.md
 └── sdd-engineering/
@@ -281,4 +283,17 @@ Every cross-plugin reference uses the full plugin-scoped name, `<plugin>:<compon
 | `agent_type` matched by `restrict-writes.sh` | `<plugin>:<agent>` | `sdd-engineering:spec-creator`, `research-tools:researcher` |
 | `subagent_type` passed to the Agent tool | `<plugin>:<agent>` | `architecture-review:architecture-reviewer`, `research-tools:researcher` |
 
-The Claude Code docs do not state these forms explicitly for the three places above. The first packaging PR confirms them with a small probe plugin and a logging hook, before the guard script and `run-plan` are written.
+The Claude Code docs do not state these forms explicitly for the three places above. The first packaging PR confirmed them with a small probe plugin and a logging hook, before the guard script and `run-plan` were written.
+
+### Probe results (Claude Code 2.1.310, `--plugin-dir`)
+
+| Check | Result |
+| --- | --- |
+| `subagent_type: probe-b:checker` in the Agent tool | Works |
+| `agent_type` in the `PreToolUse` input of a plugin hook | Full scoped name, `probe-b:checker`. Absent for the main session |
+| `skills: [probe-a:alpha]` in a plugin agent | Preloaded. The bare `alpha` also loads, but plugins use the scoped form per the rule above |
+| `${CLAUDE_SKILL_DIR}` in a skill body | Expanded to the skill's directory in the plugin |
+| `${user_config.KEY}` in an agent body, option with only a `default` | **Not expanded**: the literal placeholder reaches the agent |
+| `CLAUDE_PLUGIN_OPTION_<KEY>` in a hook, option with only a `default` | **Not set** |
+
+So the defaults in `userConfig` cannot be relied on until the user saves a value. Every consumer falls back to the documented default itself: `restrict-writes.sh` uses `${CLAUDE_PLUGIN_OPTION_SPECS_DIR:-specs}` and the like, and each agent prompt says which default to use when it sees a literal `${user_config.…}` placeholder.
