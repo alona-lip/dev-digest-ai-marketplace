@@ -1,0 +1,13 @@
+{
+  "name": "architecture-review",
+  "version": "1.0.0",
+  "description": "Read-only architecture reviewer that checks a diff against the project's documented architecture contracts",
+  "author": {
+    "name": "alona-lip"
+  },
+  "license": "UNLICENSED",
+  "keywords": ["agent", "review", "architecture", "read-only"],
+  "dependencies": [
+    { "name": "engineering-paved-path", "version": "^1.0.0" }
+  ]
+}

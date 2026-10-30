@@ -1,0 +1,166 @@
+{
+  "skill_name": "onion-architecture",
+  "evals": [
+    {
+      "id": 1,
+      "name": "new-module-placement",
+      "prompt": "Проєкт — бекенд інтернет-книгарні (Fastify 5 + Zod + Drizzle/Postgres). Структура: src/contracts/ — Zod-контракти зі snake_case полями, порти в src/contracts/ports.ts (PaymentGateway, Mailer, SecretsProvider); src/modules/<m>/{routes,service,repository,helpers,status}.ts — модулі books, orders, customers; src/adapters/<kind>/ — реалізації портів; src/db/{client,schema,rows}.ts і src/db/migrations; src/platform/{container,errors}.ts — контейнер з overrides для тестів і AppError; пакет packages/pricing-engine — чиста бібліотека розрахунку знижок. Перевірки: npm run typecheck, npm test, npm run lint:deps (dependency-cruiser). Хочу додати новий модуль `reviews`: покупець може залишати відгуки до книжок (GET /books/:id/reviews, POST /books/:id/reviews, DELETE /reviews/:id), відгуки зберігаються в Postgres у таблиці book_reviews, а при створенні відгуку треба перевіряти, що покупець справді купував цю книжку (замовленнями володіє модуль orders). Напиши, які файли створити і де, що лежатиме в кожному, з короткими фрагментами коду. Тільки план, без змін у коді.",
+      "expected_output": "A file-by-file plan under src/modules/reviews/ with role-named files: thin routes.ts with zod schemas, service.ts orchestrating, repository with Drizzle queries taking db first, pure helpers for mapping, contracts in src/contracts, registration in modules/index.ts, a new migration, tests per ring, and lint:deps in the check gate.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "a1",
+          "text": "Creates src/modules/reviews/ with role-named files: routes.ts, service.ts, repository (repository.ts and/or repository/review.repo.ts) and helpers.ts — no domain/application/infrastructure folders"
+        },
+        {
+          "id": "a2",
+          "text": "routes.ts only resolves the request context, calls one service method and returns the result; it validates params/body with zod schemas on the route and contains no drizzle-orm, db/schema or container.db"
+        },
+        {
+          "id": "a3",
+          "text": "All Drizzle/SQL code is in the reviews repository; query functions take the db executor as the first argument"
+        },
+        {
+          "id": "a4",
+          "text": "The purchase check goes through the orders repository exposed by the container or the orders module's index.ts facade, not by importing another module's internal file"
+        },
+        {
+          "id": "a5",
+          "text": "The wire contract for a review is placed in src/contracts with snake_case fields"
+        },
+        {
+          "id": "a6",
+          "text": "The schema change is a NEW migration generated with drizzle-kit (no editing existing migrations)"
+        },
+        {
+          "id": "a7",
+          "text": "Mentions running npm run lint:deps (alongside typecheck/tests) and/or names the dependency rules the plan respects"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "new-external-integration",
+      "prompt": "Проєкт — бекенд інтернет-книгарні (Fastify 5 + Zod + Drizzle/Postgres). Структура: src/contracts/ — Zod-контракти зі snake_case полями, порти в src/contracts/ports.ts (PaymentGateway, Mailer, SecretsProvider); src/modules/<m>/{routes,service,repository,helpers,status}.ts — модулі books, orders, customers; src/adapters/<kind>/ — реалізації портів; src/db/{client,schema,rows}.ts і src/db/migrations; src/platform/{container,errors}.ts — контейнер з overrides для тестів і AppError; пакет packages/pricing-engine — чиста бібліотека розрахунку знижок. Перевірки: npm run typecheck, npm test, npm run lint:deps (dependency-cruiser). Треба, щоб після відправлення кожного замовлення сервер писав коротке повідомлення в Slack-канал складу (номер замовлення, кількість книжок, адреса міста). Токен Slack адміністратор вводить у налаштуваннях. Як це правильно вбудувати? Покажи, куди що класти, і фрагменти коду. Нічого не змінюй.",
+      "expected_output": "A port (e.g. Notifier) in src/contracts/ports.ts, a Slack adapter in src/adapters/notifier/, lazy construction in platform/container.ts reading the token from SecretsProvider, an overrides entry plus a fake, and the orders service calling the port after persisting (outside any DB transaction).",
+      "files": [],
+      "assertions": [
+        {
+          "id": "a1",
+          "text": "Defines a port/interface (e.g. Notifier) in src/contracts/ports.ts whose input is a plain contract, not a Slack-specific payload"
+        },
+        {
+          "id": "a2",
+          "text": "Implements the Slack client in src/adapters/<kind>/ and states the Slack SDK/HTTP call is imported only there"
+        },
+        {
+          "id": "a3",
+          "text": "Constructs the adapter in src/platform/container.ts, lazily, reading the token via SecretsProvider (not plain config / not process.env in the service)"
+        },
+        {
+          "id": "a4",
+          "text": "Adds the notifier to the container's test overrides and a fake implementation for tests"
+        },
+        {
+          "id": "a5",
+          "text": "The orders service depends on the port (interface), not the concrete Slack class, and calls it after the shipment is persisted, outside the DB transaction"
+        },
+        {
+          "id": "a6",
+          "text": "Slack failures are caught/logged or mapped to ExternalServiceError so they don't fail the shipment"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "where-does-logic-live",
+      "prompt": "Проєкт — бекенд інтернет-книгарні (Fastify 5 + Zod + Drizzle/Postgres). Структура: src/contracts/ — Zod-контракти зі snake_case полями, порти в src/contracts/ports.ts (PaymentGateway, Mailer, SecretsProvider); src/modules/<m>/{routes,service,repository,helpers,status}.ts — модулі books, orders, customers; src/adapters/<kind>/ — реалізації портів; src/db/{client,schema,rows}.ts і src/db/migrations; src/platform/{container,errors}.ts — контейнер з overrides для тестів і AppError; пакет packages/pricing-engine — чиста бібліотека розрахунку знижок. Перевірки: npm run typecheck, npm test, npm run lint:deps (dependency-cruiser). Хочу показувати в списку замовлень колонку 'Priority' — HIGH, якщо сума замовлення понад 200 або в ньому щонайменше 10 книжок, MEDIUM, якщо сума понад 50, інакше LOW. У src/modules/orders/helpers.ts вже є чиста функція orderTotal(lines). Де має жити ця логіка і як її тестувати? Коротко, з фрагментами коду, без змін у коді.",
+      "expected_output": "Priority classification as a pure function in orders/status.ts (or helpers.ts) reusing orderTotal, unit-tested without a DB; the route/service only gathers data and maps; the wire contract gets a priority field.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "a1",
+          "text": "Puts the HIGH/MEDIUM/LOW decision in a pure function in src/modules/orders/status.ts or helpers.ts, with no DB/Fastify imports"
+        },
+        {
+          "id": "a2",
+          "text": "Reuses the existing orderTotal helper instead of computing the total in SQL or duplicating it"
+        },
+        {
+          "id": "a3",
+          "text": "Unit tests the classifier without a database, covering the boundary cases (exactly 200 vs above, exactly 10 books, exactly 50, empty order)"
+        },
+        {
+          "id": "a4",
+          "text": "Does not put the classification inside SQL or inline in the route handler"
+        },
+        {
+          "id": "a5",
+          "text": "Adds the priority field to the shared contract in src/contracts"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "review-layering-violations",
+      "prompt": "Проєкт — бекенд інтернет-книгарні (Fastify 5 + Zod + Drizzle/Postgres). Структура: src/contracts/ — Zod-контракти зі snake_case полями, порти в src/contracts/ports.ts (PaymentGateway, Mailer, SecretsProvider); src/modules/<m>/{routes,service,repository,helpers,status}.ts — модулі books, orders, customers; src/adapters/<kind>/ — реалізації портів; src/db/{client,schema,rows}.ts і src/db/migrations; src/platform/{container,errors}.ts — контейнер з overrides для тестів і AppError; пакет packages/pricing-engine — чиста бібліотека розрахунку знижок. Перевірки: npm run typecheck, npm test, npm run lint:deps (dependency-cruiser). Подивись на цей фрагмент з нового PR і скажи, що не так з точки зору архітектури та як виправити:\n\n```ts\n// src/modules/digest/routes.ts\nimport { eq, desc } from 'drizzle-orm';\nimport * as t from '../../db/schema.js';\nimport { StripePaymentGateway } from '../../adapters/payments/stripe.js';\nimport { toBookDto } from '../books/helpers.js';\n\nexport default async function digestRoutes(app: FastifyInstance) {\n  app.get('/customers/:id/digest', async (req, reply) => {\n    const id = (req.params as any).id;\n    const payments = new StripePaymentGateway(process.env.STRIPE_KEY!);\n    const orders = await app.container.db.select().from(t.orders).where(eq(t.orders.customerId, id)).orderBy(desc(t.orders.createdAt));\n    const unpaid = orders.filter(o => o.paidAt === null);\n    if (unpaid.length > 3) reply.status(409);\n    return { unpaid, books: (await app.container.booksRepo.listForCustomer(id)).map(toBookDto) };\n  });\n}\n```",
+      "expected_output": "A review naming each violation with its rule: Drizzle/schema in a route (routes-are-thin, db-only-in-repositories), concrete adapter + process.env in a route (port via the container, secrets via SecretsProvider), cross-module import of books/helpers (no-cross-module-internals), hand-parsed params (zod schema), business rule and HTTP status decided inline, with a corrected routes/service/repository/helpers split.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "a1",
+          "text": "Flags drizzle-orm / db/schema / container.db in routes.ts and moves the query to a repository (names routes-are-thin and/or db-only-in-repositories)"
+        },
+        {
+          "id": "a2",
+          "text": "Flags constructing StripePaymentGateway in the route and reading STRIPE_KEY from process.env; says to get the PaymentGateway port from the container and the secret via SecretsProvider"
+        },
+        {
+          "id": "a3",
+          "text": "Flags the import of ../books/helpers.js as a cross-module internal import and proposes a facade/_shared/container alternative"
+        },
+        {
+          "id": "a4",
+          "text": "Flags `(req.params as any).id` and proposes a zod params schema with withTypeProvider<ZodTypeProvider>()"
+        },
+        {
+          "id": "a5",
+          "text": "Moves the unpaid > 3 rule into a pure helper and replaces reply.status(409) with throwing an AppError subclass from the service"
+        },
+        {
+          "id": "a6",
+          "text": "Suggests running npm run lint:deps to confirm, and does not suggest adding these to the known-violations baseline"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "pure-package-io-request",
+      "prompt": "Проєкт — бекенд інтернет-книгарні (Fastify 5 + Zod + Drizzle/Postgres). Структура: src/contracts/ — Zod-контракти зі snake_case полями, порти в src/contracts/ports.ts (PaymentGateway, Mailer, SecretsProvider); src/modules/<m>/{routes,service,repository,helpers,status}.ts — модулі books, orders, customers; src/adapters/<kind>/ — реалізації портів; src/db/{client,schema,rows}.ts і src/db/migrations; src/platform/{container,errors}.ts — контейнер з overrides для тестів і AppError; пакет packages/pricing-engine — чиста бібліотека розрахунку знижок. Перевірки: npm run typecheck, npm test, npm run lint:deps (dependency-cruiser). Хочу, щоб packages/pricing-engine під час розрахунку знижки сам читав файл promo-rules.json з диска і застосовував правила звідти. Додай це в packages/pricing-engine/src/discount.ts через fs.readFileSync — як це краще зробити? Покажи план і фрагменти, без змін у коді.",
+      "expected_output": "Push back on fs inside the pure package (pure-package-no-node-io); the backend loads the promo rules (through a repository or an adapter, called from a service) and passes them as plain data into an argument exported via the package's index.ts; tests of the package stay hermetic.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "a1",
+          "text": "Does not add fs/readFileSync (or any Node I/O) to pricing-engine and explains it must stay pure / names the pure-package no-I/O rule"
+        },
+        {
+          "id": "a2",
+          "text": "Loads the promo rules on the backend side (a service using a repository, an adapter or config), not in a route"
+        },
+        {
+          "id": "a3",
+          "text": "Passes the rules into pricing-engine as plain data through a parameter, keeping the existing function signature compatible"
+        },
+        {
+          "id": "a4",
+          "text": "Any new pricing-engine function or type is exported from its src/index.ts and the backend imports the package name, not a deep path"
+        },
+        {
+          "id": "a5",
+          "text": "Proposes a hermetic pricing-engine unit test with plain input data (no filesystem fixture needed)"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "research-tools",
+  "version": "1.0.0",
+  "description": "Read-only researcher agent that gathers facts from the project or the web and can save one research note",
+  "author": {
+    "name": "alona-lip"
+  },
+  "license": "UNLICENSED",
+  "keywords": ["agent", "research", "read-only"],
+  "userConfig": {
+    "research_dir": {
+      "type": "string",
+      "title": "Research notes directory",
+      "description": "Project-relative directory where the researcher saves <feature>.research.md notes",
+      "default": "docs/plans"
+    }
+  }
+}
