@@ -2,19 +2,19 @@ import { useApp } from '../context';
 import { CopyBox } from '../components/CopyBox';
 import { KindDot } from '../components/Kind';
 import { Markdown } from '../components/Markdown';
-import { KIND_PLURAL } from '../lib/catalog';
+import { t } from '../i18n';
 import type { Kind } from '../lib/types';
 import { NotFound } from './NotFound';
 
 const ORDER: Kind[] = ['skill', 'agent', 'command', 'hook', 'mcp'];
 
-/** "other-plugin", "other-plugin@market" or "other-plugin:skill" → "other-plugin". */
-const depPlugin = (dep: string) => dep.split(/[:@]/)[0];
+/** "other-plugin" or "other-plugin:skill" → "other-plugin". */
+const depPlugin = (name: string) => name.split(':')[0];
 
 export function PluginDetail({ name }: { name: string }) {
   const { catalog, go, back } = useApp();
   const p = catalog.plugins[name];
-  if (!p) return <NotFound what={`Plugin “${name}”`} />;
+  if (!p) return <NotFound what={t.plugin.notFound(name)} />;
 
   const groups = ORDER.map((kind) => ({
     kind,
@@ -24,7 +24,7 @@ export function PluginDetail({ name }: { name: string }) {
   return (
     <main className="page plugin-page">
       <button type="button" className="back-link" onClick={back}>
-        ← Back
+        {t.common.back}
       </button>
       <div className="detail-head">
         <div className="plugin-icon" aria-hidden="true">◆</div>
@@ -36,26 +36,26 @@ export function PluginDetail({ name }: { name: string }) {
           </div>
           {p.description && <p className="detail-desc">{p.description}</p>}
           <div className="detail-meta">
-            {[p.author, p.updated && `updated ${p.updated}`].filter(Boolean).join(' · ')}
+            {[p.author, p.updated && t.plugin.updated(p.updated)].filter(Boolean).join(' · ')}
           </div>
         </div>
       </div>
 
       <CopyBox text={p.installText} id={'p:' + p.name}>
         <a className="btn-ghost-lg" href={p.githubUrl} target="_blank" rel="noopener noreferrer">
-          View on GitHub ↗
+          {t.common.viewOnGitHub}
         </a>
       </CopyBox>
 
       {groups.length > 0 && (
         <section className="section">
-          <h2 className="section-title">Components</h2>
+          <h2 className="section-title">{t.plugin.components}</h2>
           <div className="comp-groups">
             {groups.map((g) => (
               <div key={g.kind}>
                 <div className="comp-group-head">
                   <KindDot kind={g.kind} />
-                  <span className="comp-group-label">{KIND_PLURAL[g.kind]}</span>
+                  <span className="comp-group-label">{t.kinds.plural[g.kind]}</span>
                   <span className="count">{g.items.length}</span>
                 </div>
                 <div className="comp-grid">
@@ -77,20 +77,23 @@ export function PluginDetail({ name }: { name: string }) {
 
       {p.deps.length > 0 && (
         <section className="section">
-          <h2 className="section-title">Dependencies</h2>
+          <h2 className="section-title">{t.plugin.dependencies}</h2>
           <div className="deps">
             {p.deps.map((d) => {
-              const target = catalog.plugins[depPlugin(d)];
+              const external = !!d.marketplace && d.marketplace !== catalog.marketplace;
+              const target = external ? undefined : catalog.plugins[depPlugin(d.name)];
+              const label = external ? `${d.name}@${d.marketplace}` : d.name;
               return (
                 <button
                   type="button"
-                  key={d}
+                  key={label}
                   className="dep hoverable"
                   disabled={!target}
-                  title={target ? undefined : 'Not in this marketplace'}
+                  title={target ? undefined : t.common.notInMarketplace}
                   onClick={() => target && go({ screen: 'plugin', name: target.name })}
                 >
-                  {d}
+                  {label}
+                  {d.version && <span className="dep-range"> {d.version}</span>}
                   {target ? ' ↗' : ''}
                 </button>
               );
@@ -101,7 +104,7 @@ export function PluginDetail({ name }: { name: string }) {
 
       {p.readmeHtml && (
         <section className="section">
-          <h2 className="section-title">README</h2>
+          <h2 className="section-title">{t.plugin.readme}</h2>
           <div className="panel doc-panel">
             <Markdown html={p.readmeHtml} />
           </div>
@@ -110,7 +113,7 @@ export function PluginDetail({ name }: { name: string }) {
 
       {p.changelog.length > 0 && (
         <section>
-          <h2 className="section-title">Changelog</h2>
+          <h2 className="section-title">{t.plugin.changelog}</h2>
           <div className="changelog">
             {p.changelog.map((c) => (
               <div key={c.version} className="changelog-item">

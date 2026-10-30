@@ -6,7 +6,7 @@ import { basename, dirname, join, posix, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { Marked } from 'marked';
 import YAML from 'yaml';
-import type { Catalog, ChangelogEntry, Entry, Kind, PluginInfo } from '../src/lib/types';
+import type { Catalog, ChangelogEntry, Dependency, Entry, Kind, PluginInfo } from '../src/lib/types';
 
 export interface BuildOptions {
   repoRoot: string;
@@ -137,6 +137,25 @@ export function parseChangelog(md: string): ChangelogEntry[] {
   return out;
 }
 
+/** A plugin.json `dependencies` entry: "name", "name@marketplace" or { name, version?, marketplace? }. */
+export function parseDependency(value: unknown): Dependency | null {
+  let name: string;
+  let version = '';
+  let marketplace = '';
+  if (isObject(value)) {
+    name = str(value.name);
+    version = str(value.version);
+    marketplace = str(value.marketplace);
+  } else {
+    [name, marketplace = ''] = str(value).split('@');
+  }
+  if (!name) return null;
+  const dep: Dependency = { name };
+  if (version) dep.version = version;
+  if (marketplace) dep.marketplace = marketplace;
+  return dep;
+}
+
 function defaultGitDate(repoRoot: string) {
   return (relPath: string): string => {
     try {
@@ -246,8 +265,8 @@ export function buildCatalog(opts: BuildOptions): Catalog {
     const version = str(manifest.version) || str(mp.version);
     const installText = `/plugin install ${name}@${marketplace}`;
     const deps = (Array.isArray(manifest.dependencies) ? manifest.dependencies : [])
-      .map((d) => (isObject(d) ? str(d.name) : str(d)))
-      .filter(Boolean);
+      .map(parseDependency)
+      .filter((d): d is Dependency => d !== null);
 
     const info: PluginInfo = {
       name,
@@ -297,6 +316,7 @@ export function buildCatalog(opts: BuildOptions): Catalog {
         invocation: invocation(n),
         tools: toList(data['allowed-tools'] ?? data.tools),
         model: str(data.model) || undefined,
+        skills: kind === 'agent' ? toList(data.skills) : undefined,
         bodyText: toPlainText(body),
         bodyHtml: md(body, rel(file)),
       });

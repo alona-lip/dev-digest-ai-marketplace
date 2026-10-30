@@ -26,7 +26,9 @@ The catalog is regenerated on every `dev` and `build`. Run `npm run catalog` to 
 | Plugins | `.claude-plugin/marketplace.json` entries plus each `plugins/<name>/.claude-plugin/plugin.json` |
 | Keywords | `keywords` in `plugin.json` and `tags` in the marketplace entry |
 | Skills | `skills/*/SKILL.md` frontmatter (`name`, `description`, `allowed-tools`) and body |
-| Agents | `agents/*.md` frontmatter (`name`, `description`, `tools`, `model`) and body |
+| Dependencies | `dependencies` in `plugin.json`: name, version range and marketplace |
+| Agents | `agents/*.md` frontmatter (`name`, `description`, `tools`, `model`, `skills`) and body |
+| Preloaded skills | an agent's `skills:` list, linked to the skill pages; each skill page lists the agents that preload it |
 | Commands | `commands/*.md` |
 | Hooks | `hooks/hooks.json`, one entry per event and matcher |
 | MCP servers | `.mcp.json`; only environment variable names are published, never values |
@@ -53,6 +55,7 @@ Queries can be natural language in English or Ukrainian:
 ```
 scripts/build-catalog.ts   repository → public/catalog.json + public/feed.xml
 src/App.tsx                screens, hash routing, keyboard shortcuts
+src/i18n.ts                all UI text; components never contain text (test/i18n.test.ts enforces this)
 src/lib/                   search, query parsing, router, catalog types
 src/screens/               Home, Search, Plugin, Artifact, What's new, Getting started
 src/components/            header, cards, command palette, copy box
@@ -64,7 +67,15 @@ Routes use the URL hash (`#/search?q=…`, `#/plugin/<name>`) because GitHub Pag
 
 ## Deployment
 
-`.github/workflows/pages.yml` runs the tests and the build on pull requests. On every push to `main` that touches `site/`, `plugins/` or `.claude-plugin/`, it also deploys `site/dist` to GitHub Pages.
+`.github/workflows/pages.yml` (**Catalog site**) is separate from the marketplace checks in `validate.yml`. Each job shows up as its own check in the GitHub UI:
+
+| Job | Runs on | What it does |
+| --- | --- | --- |
+| **Site · tests** | PRs and pushes to `main` | `npm test` |
+| **Site · build** | PRs and pushes to `main` | `npm run build` (catalog, type-check, Vite), then writes plugin and entry counts to the run summary |
+| **Site · deploy** | pushes to `main` and manual runs, after both jobs above pass | publishes `site/dist` to GitHub Pages |
+
+The workflow runs only when `site/`, `plugins/`, `.claude-plugin/` or the workflow itself changes. Run it by hand from the **Actions** tab (`workflow_dispatch`).
 
 One-time setup: in the repository settings, open **Pages** and set **Source** to **GitHub Actions**.
 

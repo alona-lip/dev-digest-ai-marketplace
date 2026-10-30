@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useApp } from '../context';
-import { KIND_LABEL } from '../lib/catalog';
+import { t } from '../i18n';
 import type { CatalogSearch } from '../lib/search';
 import { entryRoute } from './ArtifactCard';
 import { KindDot } from './Kind';
@@ -50,7 +50,7 @@ export function CommandPalette({ search, onClose }: { search: CatalogSearch; onC
 
   return (
     <div className="palette-backdrop" onClick={onClose}>
-      <div className="palette" role="dialog" aria-modal="true" aria-label="Jump to an artifact" onClick={(e) => e.stopPropagation()}>
+      <div className="palette" role="dialog" aria-modal="true" aria-label={t.palette.label} onClick={(e) => e.stopPropagation()}>
         <div className="palette-input-row">
           <span className="glyph" aria-hidden="true">⌕</span>
           <input
@@ -58,14 +58,14 @@ export function CommandPalette({ search, onClose }: { search: CatalogSearch; onC
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="Jump to an artifact…"
-            aria-label="Jump to an artifact"
+            placeholder={t.palette.placeholder}
+            aria-label={t.palette.label}
             role="combobox"
             aria-expanded="true"
             aria-controls="palette-list"
             aria-activedescendant={results.length ? `palette-item-${active}` : undefined}
           />
-          <span className="kbd">ESC</span>
+          <span className="kbd">{t.palette.escKey}</span>
         </div>
         <div className="palette-list" id="palette-list" role="listbox">
           {results.map((e, i) => (
@@ -82,12 +82,12 @@ export function CommandPalette({ search, onClose }: { search: CatalogSearch; onC
               <KindDot kind={e.kind} />
               <span className="palette-item-main">
                 <span className="palette-item-name">{e.displayName}</span>{' '}
-                <span className="palette-item-meta">· {e.kind === 'plugin' ? 'plugin' : e.plugin}</span>
+                <span className="palette-item-meta">· {e.kind === 'plugin' ? t.palette.pluginMeta : e.plugin}</span>
               </span>
-              <span className="palette-item-kind">{KIND_LABEL[e.kind]}</span>
+              <span className="palette-item-kind">{t.kinds.label[e.kind]}</span>
             </button>
           ))}
-          {results.length === 0 && <div className="palette-empty">Nothing found</div>}
+          {results.length === 0 && <div className="palette-empty">{t.common.nothingFound}</div>}
         </div>
       </div>
     </div>

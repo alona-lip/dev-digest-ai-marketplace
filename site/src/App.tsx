@@ -3,6 +3,7 @@ import { AppContext, type AppApi } from './context';
 import { CommandPalette } from './components/CommandPalette';
 import { Header } from './components/Header';
 import { Toast } from './components/Toast';
+import { t } from './i18n';
 import { copyText } from './lib/clipboard';
 import { loadCatalog } from './lib/catalog';
 import { navigate, parseHash, searchRoute, toHash, useHash, type Route, type SearchRoute } from './lib/router';
@@ -120,18 +121,18 @@ export function App() {
 
   useEffect(() => {
     if (!catalog) return;
-    const base = 'Dev Digest Catalog';
+    const base = t.appTitle;
     const title =
       route.screen === 'plugin'
         ? catalog.plugins[route.name]?.displayName
         : route.screen === 'artifact'
           ? catalog.entries.find((e) => e.id === route.id)?.displayName
           : route.screen === 'search' && route.q
-            ? `“${route.q}”`
+            ? t.app.searchTitle(route.q)
             : route.screen === 'whats-new'
-              ? "What's new"
+              ? t.whatsNew.title
               : route.screen === 'getting-started'
-                ? 'Getting started'
+                ? t.home.gettingStarted
                 : undefined;
     document.title = title ? `${title} · ${base}` : base;
   }, [catalog, route]);
@@ -149,8 +150,8 @@ export function App() {
         onToggleTheme={toggleTheme}
         repoUrl={catalog?.repoUrl ?? 'https://github.com/alona-lip/dev-digest-ai-marketplace'}
       />
-      {load.status === 'loading' && <div className="status">Loading the catalog…</div>}
-      {load.status === 'error' && <div className="status">Could not load the catalog ({load.message}). Try reloading the page.</div>}
+      {load.status === 'loading' && <div className="status">{t.app.loading}</div>}
+      {load.status === 'error' && <div className="status">{t.app.loadError(load.message)}</div>}
       {api && search && (
         <AppContext.Provider value={api}>
           {route.screen === 'home' && <Home query={query} onQuery={(v) => onQuery(v, true)} onSubmit={onSubmit} />}

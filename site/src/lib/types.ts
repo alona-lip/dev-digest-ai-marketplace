@@ -26,8 +26,19 @@ export interface Entry {
   invocation: string;
   tools: string[];
   model?: string;
+  /** Agents only: skills preloaded through the `skills:` frontmatter, as written there. */
+  skills?: string[];
   bodyText: string;
   bodyHtml: string;
+}
+
+/** An entry of `dependencies` in plugin.json. */
+export interface Dependency {
+  name: string;
+  /** SemVer range, such as "^1.0.0". */
+  version?: string;
+  /** Set when the dependency comes from another marketplace. */
+  marketplace?: string;
 }
 
 export interface PluginInfo {
@@ -40,7 +51,7 @@ export interface PluginInfo {
   category?: string;
   compatibility?: string;
   keywords: string[];
-  deps: string[];
+  deps: Dependency[];
   readmeHtml: string;
   changelog: ChangelogEntry[];
   githubUrl: string;
